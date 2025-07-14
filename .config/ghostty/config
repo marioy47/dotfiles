@@ -1,6 +1,7 @@
 # Window Configuration
 theme = "/Applications/Ghostty.app/Contents/Resources/ghostty/themes/tokyonight_moon"
 window-decoration = none
+quit-after-last-window-closed = true
 
 # Jet Brains Mono Font
 adjust-cell-height = 30%
