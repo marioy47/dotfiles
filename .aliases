@@ -23,7 +23,7 @@ alias urlencode='python -c "import sys, urllib as ul; print ul.quote_plus(sys.ar
 alias mergepdf='/System/Library/Automator/Combine\ PDF\ Pages.action/Contents/Resources/join.py'
 
 # Don't know, but tmux is hard to type for me
-alias tm="tmux attach || tmux new"
+#alias tm="tmux attach || tmux new"
 
 # If you are using Kitty.app then you can preview images on the terminal:
 alias icat="kitty +kitten icat"
@@ -38,7 +38,7 @@ alias sail='[ -f sail ] && sh sail || sh vendor/bin/sail'
 alias v="fd --type f --hidden --exclude .git | fzf-tmux -p --reverse | xargs nvim"
 
 # Show Todoist tasks in #Inbox
-alias td-inbox="todoist --color l --filter '(#Inbox)'"
+alias tdi="todoist --color l --filter '(#Inbox)'"
 
 # Use `bat` with a theme
 alias bat="bat --theme=gruvbox-dark"

@@ -2,40 +2,40 @@
 
 # Show a list of terminal colors names and displays the color
 function terminal-colors-list() {
-    for i in {0..255}; do
-        printf "\x1b[38;5;${i}mcolour${i}\n"
-    done
+	for i in {0..255}; do
+		printf "\x1b[38;5;${i}mcolour${i}\n"
+	done
 }
 
 # Creates a backup of secret .files in Google Drive
 function backup-security() {
-    DEST=backup-secret-dotfiles.zip
-    cd ${HOME}
-    zip /tmp/${DEST} .rclone.conf # This is a trick so the `zip -u` (update zipfile) works
-    for i in .aws .netrc .ssh .gnupg .ultrahook .extra .rclone.conf .todoist.config.json .intelephense; do
-        zip -r -u /tmp/${DEST} ${i}
-    done
-    cd /tmp
-    rclone -P copy ${DEST} GdriveMario:/Backups/
+	DEST=backup-secret-dotfiles.zip
+	cd ${HOME}
+	zip /tmp/${DEST} .rclone.conf # This is a trick so the `zip -u` (update zipfile) works
+	for i in .aws .netrc .ssh .gnupg .ultrahook .extra .rclone.conf .todoist.config.json .intelephense; do
+		zip -r -u /tmp/${DEST} ${i}
+	done
+	cd /tmp
+	rclone -P copy ${DEST} GdriveMario:/Backups/
 }
 
 # Updates Python packages
 function update-pip() {
-    pip3 list --outdated --format=freeze | grep -v '^\-e' | cut -d = -f 1 | xargs -n1 pip3 install -U
+	pip3 list --outdated --format=freeze | grep -v '^\-e' | cut -d = -f 1 | xargs -n1 pip3 install -U
 }
 
 # Diff the contents of 2 zip files
 function diff-zip {
-    if [ ! -f "$1" -o ! -f "$2" ]; then
-        echo "Diff the contents of 2 zip files. Usage:"
-        echo "  $0 <file1.zip> <file2.zip>"
-        return
-    fi
-    file1=$1
-    file2=$2
-    diff \
-        <(unzip -vqq $file1 | awk '{$2=""; $3=""; $4=""; $5=""; $6=""; print}' | sort -k3) \
-        <(unzip -vqq $file2 | awk '{$2=""; $3=""; $4=""; $5=""; $6=""; print}' | sort -k3)
+	if [ ! -f "$1" -o ! -f "$2" ]; then
+		echo "Diff the contents of 2 zip files. Usage:"
+		echo "  $0 <file1.zip> <file2.zip>"
+		return
+	fi
+	file1=$1
+	file2=$2
+	diff \
+		<(unzip -vqq $file1 | awk '{$2=""; $3=""; $4=""; $5=""; $6=""; print}' | sort -k3) \
+		<(unzip -vqq $file2 | awk '{$2=""; $3=""; $4=""; $5=""; $6=""; print}' | sort -k3)
 }
 
 # Change working directory with Yazi: https://yazi-rs.github.io/docs/quick-start#shell-wrapper
@@ -50,35 +50,43 @@ function y() {
 
 # SSH to a WPEngine environment using their ssh gateway
 function wpengine-ssh {
-    if [ -z $1 ]; then
-        echo 'ssh-wpengine <environment>'
-        return
-    fi
-    ssh -i ~/.ssh/wpengine_ed25519 -o IdentitiesOnly=yes $1@$1.ssh.wpengine.net
+	if [ -z $1 ]; then
+		echo 'ssh-wpengine <environment>'
+		return
+	fi
+	ssh -i ~/.ssh/wpengine_ed25519 -o IdentitiesOnly=yes $1@$1.ssh.wpengine.net
 }
 
 # Execute Elementor's, and Elementor PRO, db upgrade on a list of WPEngine installs
 function wpengine-elementor-update {
-  for install in "$@"; do
-    echo
-    echo "#### Executing Upgrade Elementor tasks in ${install} (upgrade db, upgrade pro db, flush css) ####"
-    echo
-    wp --ssh="${install}@${install}.ssh.wpengine.net" elementor update db
-    wp --ssh="${install}@${install}.ssh.wpengine.net" elementor-pro update db
-    wp --ssh="${install}@${install}.ssh.wpengine.net" elementor flush_css --regenerate
-    ssh "${install}@${install}.ssh.wpengine.net" "wp package install wp-media/wp-rocket-cli:trunk && wp rocket preload"
-    wp --ssh="${install}@${install}.ssh.wpengine.net" cdn-cache flush
-  done
+	for install in "$@"; do
+		echo
+		echo "#### Executing Upgrade Elementor tasks in ${install} (upgrade db, upgrade pro db, flush css) ####"
+		echo
+		wp --ssh="${install}@${install}.ssh.wpengine.net" elementor update db
+		wp --ssh="${install}@${install}.ssh.wpengine.net" elementor-pro update db
+		wp --ssh="${install}@${install}.ssh.wpengine.net" elementor flush_css --regenerate
+		ssh "${install}@${install}.ssh.wpengine.net" "wp package install wp-media/wp-rocket-cli:trunk && wp rocket preload"
+		wp --ssh="${install}@${install}.ssh.wpengine.net" cdn-cache flush
+	done
 }
 
 function wpengine-update-plugins {
-    for install in "$@"; do
-        echo "Updating all plugins from ${install}"
-        wp --ssh="${install}@${install}.ssh.wpengine.net" plugin update --all
-        wp --ssh="${install}@${install}.ssh.wpengine.net" elementor update db
-        wp --ssh="${install}@${install}.ssh.wpengine.net" elementor-pro update db
-        wp --ssh="${install}@${install}.ssh.wpengine.net" elementor flush_css --regenerate
-    done
+	for install in "$@"; do
+		echo "Updating all plugins from ${install}"
+		wp --ssh="${install}@${install}.ssh.wpengine.net" plugin update --all
+		wp --ssh="${install}@${install}.ssh.wpengine.net" elementor update db
+		wp --ssh="${install}@${install}.ssh.wpengine.net" elementor-pro update db
+		wp --ssh="${install}@${install}.ssh.wpengine.net" elementor flush_css --regenerate
+	done
+}
+
+function tm {
+	NAME="default"
+	if [ "$1" != "" ]; then
+		NAME="${1}"
+	fi
+	tmux new-session -A -s "${NAME}"
 }
 
 # vim: syntax=sh ts=4 sw=4 et
